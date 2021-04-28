@@ -4,7 +4,7 @@
 
 Property value shorthand macro, like in js. When you are too lazy to specify both key and value.
 
-  ```
+  ```clojure
   (let [one 1
         two 2
         :three three
