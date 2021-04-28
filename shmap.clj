@@ -41,6 +41,10 @@
                         )))
         res))))
 
+(defmacro shmap-test [expected & symbols]
+  `(is (= ~expected
+          (shmap ~@symbols))))
+
 (deftest basic
   (let [one 1
         two 2
@@ -48,24 +52,24 @@
         three 3
         expected {:two two :one one, :ten ten, :three three}]
 
-    (is (= expected
-           (shmap :three three
-                  one
-                  two
-                  ten )))
-    (is (= expected
-           (shmap one
-                  :three three
-                  two
-                  ten )))
-    (is (= expected
-           (shmap one
-                  two
-                  :three three
-                  ten )
-           ))
-    (is (= expected
-           (shmap one
-                  two
-                  ten
-                  :three three)))
+    (shmap-test expected
+                :three three
+                one
+                two
+                ten)
+
+    (shmap-test expected
+                one
+                :three three
+                two
+                ten )
+    (shmap-test expected
+                one
+                two
+                :three three
+                ten )
+    (shmap-test expected
+                one
+                two
+                ten
+                :three three)))
