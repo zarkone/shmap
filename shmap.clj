@@ -3,7 +3,7 @@
 
 
 (defmacro shmap
-  "Property value shorthand, like in js. When you are lazy to specify both key and value.
+  "Property value shorthand, like in js. When you are too lazy to specify both key and value.
 
   ```
   (let [one 1
