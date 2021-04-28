@@ -18,21 +18,33 @@
 "
   [& symbols]
   (loop [symbols symbols
-         res {}
-         k nil]
-    (let [first-symbol (first symbols)]
+         res {}]
+    (let [first-symbol (first symbols)
+          second-symbol (second symbols)]
       (if (seq symbols)
-        (recur (if (and (symbol? first-symbol)
-                        (not k))
+        (recur (cond
+                 (and (symbol? first-symbol)
+                      (symbol? second-symbol))
                  (rest (rest symbols))
-                 (rest symbols))
+
+                 (not (symbol? first-symbol))
+                 (rest (rest symbols))
+
+                 (not (symbol? second-symbol))
+                 (rest symbols)
+                 )
                (merge res
-                      (if k
-                        {k first-symbol}
+                      (cond
+                        (and (symbol? first-symbol)
+                             (symbol? second-symbol))
                         {(keyword first-symbol) first-symbol}
-                        ))
-               (when-not (symbol? first-symbol)
-                 first-symbol))
+
+                        (not (symbol? first-symbol))
+                        {first-symbol first-symbol}
+
+                        (not (symbol? second-symbol))
+                        {(keyword first-symbol) first-symbol}
+                        )))
         res))
 
 
@@ -46,25 +58,31 @@
       ten 10
       three 3
       res {:one 1, :ten 10, :three 3}]
-  (map #(= % res)
-       [(shmap :three three
-               one
-               two
-               ten )
-        (shmap one
-               :three three
-               two
-               ten )
-        (shmap one
-               two
-               :three three
-               ten )
-        (shmap one
-               two
-               ten
-               :three three)
+  ;; f
+  [(shmap :three three
+          one
+          two
+          ten )
+   ;; 2
+   (shmap one
+          :three three
+          two
+          ten )
+   ;; 3
+   (shmap one
+          two
+          :three three
+          ten )
+   ;; l
+   (shmap one
+          two
+          ten
+          :three three)
+   ]
 
 
-
-        ])
   )
+
+(comment
+  (map #(= % res)
+       ))
