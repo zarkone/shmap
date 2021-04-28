@@ -31,13 +31,13 @@
                  (rest (rest symbols))
 
                  (not (symbol? second-symbol))
-                 (rest symbols)
-                 )
+                 (rest symbols))
                (merge res
                       (cond
                         (and (symbol? first-symbol)
                              (symbol? second-symbol))
-                        {(keyword first-symbol) first-symbol}
+                        {(keyword first-symbol) first-symbol
+                         (keyword second-symbol) second-symbol}
 
                         (not (symbol? first-symbol))
                         {first-symbol first-symbol}
@@ -45,13 +45,7 @@
                         (not (symbol? second-symbol))
                         {(keyword first-symbol) first-symbol}
                         )))
-        res))
-
-
-    )
-
-
-  )
+        res))))
 
 (let [one 1
       two 2
