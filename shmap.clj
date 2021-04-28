@@ -1,4 +1,5 @@
-(ns shmap)
+(ns shmap
+  (:require [clojure.test :refer [deftest is]]))
 
 
 (defmacro shmap
@@ -19,64 +20,52 @@
   [& symbols]
   (loop [symbols symbols
          res {}]
-    (let [first-symbol (first symbols)
-          second-symbol (second symbols)]
+    (let [[left right] (take 2 symbols)
+          both-symbols? (every? symbol? [left right])]
       (if (seq symbols)
-        (recur (cond
-                 (and (symbol? first-symbol)
-                      (symbol? second-symbol))
-                 (rest (rest symbols))
-
-                 (not (symbol? first-symbol))
-                 (rest (rest symbols))
-
-                 (not (symbol? second-symbol))
-                 (rest symbols))
+        (recur (rest (if (or both-symbols?
+                             (not (symbol? left)))
+                       (rest symbols)
+                       symbols))
                (merge res
                       (cond
-                        (and (symbol? first-symbol)
-                             (symbol? second-symbol))
-                        {(keyword first-symbol) first-symbol
-                         (keyword second-symbol) second-symbol}
+                        both-symbols?
+                        {(keyword left) left
+                         (keyword right) right}
 
-                        (not (symbol? first-symbol))
-                        {first-symbol first-symbol}
+                        (not (symbol? left))
+                        {left right}
 
-                        (not (symbol? second-symbol))
-                        {(keyword first-symbol) first-symbol}
+                        :else
+                        {(keyword left) left}
                         )))
         res))))
 
-(let [one 1
-      two 2
-      ten 10
-      three 3
-      res {:one 1, :ten 10, :three 3}]
-  ;; f
-  [(shmap :three three
-          one
-          two
-          ten )
-   ;; 2
-   (shmap one
-          :three three
-          two
-          ten )
-   ;; 3
-   (shmap one
-          two
-          :three three
-          ten )
-   ;; l
-   (shmap one
-          two
-          ten
-          :three three)
-   ]
+(deftest basic
+  (let [one 1
+        two 2
+        ten 10
+        three 3
+        expected {:two two :one one, :ten ten, :three three}]
 
-
-  )
-
-(comment
-  (map #(= % res)
-       ))
+    (is (= expected
+           (shmap :three three
+                  one
+                  two
+                  ten )))
+    (is (= expected
+           (shmap one
+                  :three three
+                  two
+                  ten )))
+    (is (= expected
+           (shmap one
+                  two
+                  :three three
+                  ten )
+           ))
+    (is (= expected
+           (shmap one
+                  two
+                  ten
+                  :three three)))
